@@ -1,61 +1,47 @@
-import "./styles.css";
-import { useFormik } from "formik";
+import React from "react";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
-export default App = () => {
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: ""
-    },
-    onSubmit: (values) => {
-      alert(values.email + "  |  " + values.password);
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email").required("Required field"),
-      password: Yup.string()
-        .min(3, "Enter stronger password")
-        .required("Required field")
-    })
+// Synchronous validation function
+/*const validate = values => {
+   let errorMessage;
+   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+     errorMessage = 'Invalid email address';
+   }
+
+   return errorMessage;
+ };*/
+
+const ValidationSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Required")
+});
+
+// Async validation function
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const validateAsync = (value) => {
+  return sleep(2000).then(() => {
+    if (["admin", "null", "god"].includes(value)) {
+      return "Nice try";
+    }
   });
+};
 
-  return (
-    <div>
-      <h1>Test Formik Form</h1>
-
-      <form onSubmit={formik.handleSubmit}>
-        <div>
-          <label htmlFor="email">Email: </label>
-          <input
-            type="text"
-            id="email"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
-
-          {formik.touched.email && formik.errors.email && (
-            <div style={{ color: "red" }}>{formik.errors.email}</div>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="password">Password: </label>
-          <input
-            type="password"
-            id="password"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-          />
-
-          {formik.touched.password && formik.errors.password && (
-            <div style={{ color: "red" }}>{formik.errors.password}</div>
-          )}
-        </div>
+// example usage
+export const MyForm = () => (
+  <Formik
+    validationSchema={ValidationSchema}
+    initialValues={{ email: "", username: "" }}
+    onSubmit={(values) => alert(JSON.stringify(values, null, 2))}
+  >
+    {({ errors, touched }) => (
+      <Form>
+        <Field name="email" type="email" />
+        {errors.email && touched.email && <div>{errors.email}</div>}
+        <Field name="password" type="password" />
 
         <button type="submit">Submit</button>
-      </form>
-    </div>
-  );
-};
+      </Form>
+    )}
+  </Formik>
+);
