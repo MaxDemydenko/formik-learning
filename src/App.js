@@ -32,7 +32,10 @@ export const MyForm = () => (
   <Formik
     validationSchema={ValidationSchema}
     initialValues={{ email: "", username: "" }}
-    onSubmit={(values) => alert(JSON.stringify(values, null, 2))}
+    onSubmit={(values, { setSubmitting }) => {
+      alert(JSON.stringify(values, null, 2));
+      setSubmitting(false);
+    }}
   >
     {({ errors, touched }) => (
       <Form>
